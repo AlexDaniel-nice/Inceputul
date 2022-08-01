@@ -4,15 +4,6 @@ using UnityEngine;
 
 public class carController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    int h;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
