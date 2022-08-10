@@ -9,7 +9,8 @@ public class script_movement : MonoBehaviour
 
     [SerializeField] private float power = 1500f;
     [SerializeField] private wheel[] wheels;
-
+    [SerializeField] Transform centerOfMass;
+   
 
     PlayerInputActions playerInputActions;
     Rigidbody car_rb;
@@ -17,6 +18,7 @@ public class script_movement : MonoBehaviour
     private void Awake()
     {
         car_rb = GetComponent<Rigidbody>();
+        car_rb.centerOfMass = centerOfMass.localPosition;
 
         playerInputActions = new PlayerInputActions();
         playerInputActions.Player.Enable();
@@ -31,6 +33,8 @@ public class script_movement : MonoBehaviour
         Vector2 direction = context.ReadValue<Vector2>();
         HrzMove = direction.x;
         VerMove = direction.y;
+
+        Debug.Log(VerMove);
     }
     private void ProcessForces()
     {
