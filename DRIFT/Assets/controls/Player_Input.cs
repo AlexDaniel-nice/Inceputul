@@ -53,6 +53,24 @@ public partial class @Player_Input : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Acceleration"",
+                    ""type"": ""Value"",
+                    ""id"": ""ee6b4188-be73-4f25-a071-bc5d990389b7"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": ""Clamp(min=-1,max=1)"",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Steer"",
+                    ""type"": ""Value"",
+                    ""id"": ""767e5d60-9059-4c4a-a7a6-9205c29cbcff"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": ""Clamp(min=-1,max=1)"",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -231,6 +249,72 @@ public partial class @Player_Input : IInputActionCollection2, IDisposable
                     ""action"": ""Fire"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""bd3d04d1-b486-43fa-9711-a6787b188930"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Acceleration"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""1414de1c-d773-4593-ad85-5cc1894c7451"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Acceleration"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""c71cb9e6-de2a-4990-a1c9-621cee4fdc69"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Acceleration"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""b3f9caa4-639b-4158-b45b-b7fa7b993586"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Steer"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""7cc17a32-505d-468c-b7a0-54b9c24e5165"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Steer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""c3bf6de8-331f-4a13-a1ad-75fdbdc63518"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Steer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -819,6 +903,8 @@ public partial class @Player_Input : IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
+        m_Player_Acceleration = m_Player.FindAction("Acceleration", throwIfNotFound: true);
+        m_Player_Steer = m_Player.FindAction("Steer", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -893,6 +979,8 @@ public partial class @Player_Input : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Fire;
+    private readonly InputAction m_Player_Acceleration;
+    private readonly InputAction m_Player_Steer;
     public struct PlayerActions
     {
         private @Player_Input m_Wrapper;
@@ -900,6 +988,8 @@ public partial class @Player_Input : IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
+        public InputAction @Acceleration => m_Wrapper.m_Player_Acceleration;
+        public InputAction @Steer => m_Wrapper.m_Player_Steer;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -918,6 +1008,12 @@ public partial class @Player_Input : IInputActionCollection2, IDisposable
                 @Fire.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
                 @Fire.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
                 @Fire.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
+                @Acceleration.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAcceleration;
+                @Acceleration.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAcceleration;
+                @Acceleration.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAcceleration;
+                @Steer.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSteer;
+                @Steer.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSteer;
+                @Steer.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSteer;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -931,6 +1027,12 @@ public partial class @Player_Input : IInputActionCollection2, IDisposable
                 @Fire.started += instance.OnFire;
                 @Fire.performed += instance.OnFire;
                 @Fire.canceled += instance.OnFire;
+                @Acceleration.started += instance.OnAcceleration;
+                @Acceleration.performed += instance.OnAcceleration;
+                @Acceleration.canceled += instance.OnAcceleration;
+                @Steer.started += instance.OnSteer;
+                @Steer.performed += instance.OnSteer;
+                @Steer.canceled += instance.OnSteer;
             }
         }
     }
@@ -1090,6 +1192,8 @@ public partial class @Player_Input : IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
+        void OnAcceleration(InputAction.CallbackContext context);
+        void OnSteer(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

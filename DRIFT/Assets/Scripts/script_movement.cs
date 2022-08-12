@@ -1,18 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class script_movement : MonoBehaviour
 {
+    #region Car parameters
+    
     [Header("Car Settings")]
 
     [SerializeField] private float power = 1500f;
     [SerializeField] private wheel[] wheels;
     [SerializeField] Transform centerOfMass;
-   
+    #endregion
 
-    PlayerInputActions playerInputActions;
+    Player_Input playerInputActions;
     Rigidbody car_rb;
 
     private void Awake()
@@ -20,22 +23,13 @@ public class script_movement : MonoBehaviour
         car_rb = GetComponent<Rigidbody>();
         car_rb.centerOfMass = centerOfMass.localPosition;
 
-        playerInputActions = new PlayerInputActions();
+        playerInputActions = new Player_Input();
         playerInputActions.Player.Enable();
-        playerInputActions.Player.movement.performed += ProcessInput;
     }
 
     float HrzMove;
     float VerMove;
 
-    private void ProcessInput(InputAction.CallbackContext context)
-    {
-        Vector2 direction = context.ReadValue<Vector2>();
-        HrzMove = direction.x;
-        VerMove = direction.y;
-
-        Debug.Log(VerMove);
-    }
     private void ProcessForces()
     {
         foreach (wheel w in wheels)
@@ -46,6 +40,11 @@ public class script_movement : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        VerMove = playerInputActions.Player.Acceleration.ReadValue<float>();
+        HrzMove = playerInputActions.Player.Steer.ReadValue<float>();
+    }
     private void FixedUpdate()
     {
         ProcessForces();
